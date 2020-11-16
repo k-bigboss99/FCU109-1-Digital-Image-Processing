@@ -8,12 +8,6 @@ img = cv2.imread("sample.bmp",-1)
 cv2.imshow("img",img)
 cv2.waitKey()
 
-# # BMP：無壓縮 1.6MB
-# cv2.imwrite("sample.bmp",img)
-# # 171 KB
-# cv2.imwrite("sample2.jpg",img)
-
-
 color_B = np.zeros((549,1024,3))
 color_G = np.zeros((549,1024,3))
 color_R = np.zeros((549,1024,3))
