@@ -2,7 +2,6 @@ from cv2 import cv2
 import numpy as np
 from scipy import signal
 
-# border = nms(magnitude,angle)
 def nms(g,angle):
     h,w = g.shape
     canvas = np.zeros_like(g)
@@ -36,7 +35,6 @@ def combine(img,c):
             img[i + x,j + y] = 2
             combine(img,(i + x,j + y))
 
-# canvas = connected(border,100,200)
 def connected(img,low_threshold,high_threshold):
     h,w = img.shape
     # 加果是強像素設成2、弱像素設1、其他設0
@@ -58,7 +56,6 @@ def connected(img,low_threshold,high_threshold):
     img = np.where(img == 2,255,0)
     return np.uint8(img)
 
-# magnitude,angle = sobel(blur_img)
 def sobel(img):
     kernel_x = np.array(([-1, 0, 1], [-2, 0, 2], [-1, 0, 1]))
     kernel_y = np.array(([-1, -2, -1], [0, 0, 0], [1, 2, 1]))
@@ -82,14 +79,13 @@ def resize(img,size = 150):
     canvas[(size - new_h) // 2:(size - new_h) // 2 + new_h,(size - new_w) // 2:(size - new_w) // 2 + new_w] = img
     return canvas
 
-# paste_signature(canvas,signature)
 def paste_signature(img,signature):
     h,w = img.shape
     signature = resize(signature)
     img[h - 150:,w - 150:] = cv2.bitwise_or(img[h - 150:,w - 150:],signature)
 
 
-img = cv2.imread('house.jpg',0)
+img = cv2.imread('house1.jpg',0)
 # 簽名
 signature = cv2.imread('signature.png',0)
 img = cv2.resize(img,(img.shape[1] // 8,img.shape[0] // 8))
@@ -104,28 +100,27 @@ border = nms(g,angle)
 # 找有和強像素相連的弱像素
 canvas = connected(border,100,200)
 # 貼簽名
-# paste_signature(canvas,signature)
+paste_signature(canvas,signature)
 
 # hough transform
-# lines = cv2.HoughLines(canvas,1,np.pi / 180,80)
-# lines = np.squeeze(lines)
-# black = np.zeros_like(img)
-# for rho,theta in lines: 
-#     a = np.cos(theta)
-#     b = np.sin(theta)
-#     x0 = a*rho
-#     y0 = b*rho
-#     x1 = int(x0 + 1000*(-b))
-#     y1 = int(y0 + 1000*(a))
-#     x2 = int(x0 - 1000*(-b))
-#     y2 = int(y0 - 1000*(a)) 
-#     cv2.line(black,(x1,y1),(x2,y2),(255,0,0),1)
-# paste_signature(black,signature)
+lines = cv2.HoughLines( canvas, 1, math.pi/180.0, 120 )
+if lines is not None:
+	a,b,c = lines.shape
+	for i in range( a ):
+		rho = lines[i][0][0]
+		theta = lines[i][0][1]
+		a = math.cos( theta )
+		b = math.sin( theta )
+		x0, y0 = a*rho, b*rho
+		pt1 = ( int(x0+1000*(-b)), int(y0+1000*(a)) )
+		pt2 = ( int(x0-1000*(-b)), int(y0-1000*(a)) )
+		# cv2.line( img2, pt1, pt2, ( 255, 0, 0 ), 1, cv2.LINE_AA )
+		cv2.line( img2, pt1, pt2, ( 255, 0, 0 ), 1)
 
 # cv2.imwrite('myCanny.jpg',canvas)
 
-cv2.imshow('canny',canvas)
-# cv2.imshow('line',black)
+cv2.imshow('canny', canvas)
+cv2.imshow('line', img2)
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()

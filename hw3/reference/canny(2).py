@@ -112,10 +112,10 @@ def paste_signature(img,signature):
     img[h - 150:,w - 150:] = cv2.bitwise_or(img[h - 150:,w - 150:],signature)
 
 
-img = cv2.imread('house1.jpg',0)
+img = cv2.imread('picture3.jpg',0)
 # 簽名
 signature = cv2.imread('signature.png',0)
-img = cv2.resize(img,(img.shape[1] // 8,img.shape[0] // 8))
+
 
 # 模糊
 blur_img = cv2.GaussianBlur(img,(3,3),0)
@@ -145,7 +145,8 @@ for rho,theta in lines:
     y2 = int(y0 - 1000*(a)) 
     cv2.line(black,(x1,y1),(x2,y2),(255,0,0),1)
 paste_signature(black,signature)
-
+cv2.imwrite('canny3.jpg',canvas)
+cv2.imwrite('Hough3.jpg',black)
 # cv2.imwrite('myCanny.jpg',canvas)
 
 cv2.imshow('canny',canvas)
